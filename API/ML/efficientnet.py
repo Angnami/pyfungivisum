@@ -1,7 +1,6 @@
 from tensorflow.keras.models  import load_model
 import cv2
 import numpy as np
-
 class EfficientNetModel():
     
     class_indices = ['Amanita flavoconia', 'Amanita muscaria', 'Baorangia bicolor',
@@ -25,10 +24,8 @@ class EfficientNetModel():
     
      
     def make_prediction(self,image):   
-        #image = cv2.imread(path,cv2.IMREAD_COLOR)
-        #image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
         x = self.transform(image)
-        predictions = self.model.predict(x)
+        predictions = self.model.predict(x, verbose=0)
         pred_index =int(predictions.argmax(axis=-1))
         pred_class = self.class_indices[pred_index]   
-        return {"predicted_specy":f'{pred_class}', 'confidence':f'{predictions.max():.2%}'}
+        return {"predicted_specy":f'{pred_class}', 'confidence':f'{predictions.max():.4}'}
