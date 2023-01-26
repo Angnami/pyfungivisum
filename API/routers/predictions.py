@@ -29,8 +29,8 @@ def get_prediction_results(file):
 
 @router.post('/prediction')
 async def make_prediction(presumed_specy: Optional[models.Species] = None,
-            user: dict = Depends(get_current_user), db: Session = Depends(get_db), 
-            file:UploadFile = File(...)):
+    user: dict = Depends(get_current_user), db: Session = Depends(get_db), 
+    file:UploadFile = File(...)):
     userid = user.get('id')
     if presumed_specy:
         presumedspecy = presumed_specy.value
