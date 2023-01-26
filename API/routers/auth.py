@@ -61,7 +61,7 @@ async def get_current_user(token: str = Depends(oauth2_bearer)):
 
 
 @router.post('/registration')
-async def identify_user(new_user:models.CreateUser, db: Session = Depends(get_db)):
+async def create_user(new_user:models.CreateUser, db: Session = Depends(get_db)):
     user = db.query(models.Users).filter(models.Users.username == new_user.username).first()
     if user is None:
         hashed_password = get_password_hash(new_user.password)
