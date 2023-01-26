@@ -77,13 +77,12 @@ async def identify_user(new_user:models.CreateUser, db: Session = Depends(get_db
 
 @router.post("/token")
 async def login_for_access_token(form_data:OAuth2PasswordRequestForm = Depends(),
-                                db: Session = Depends(get_db)):
+    db: Session = Depends(get_db)):
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise token_exception()
     token_expires = timedelta(minutes=20)
     token = create_access_token(username=user.username, user_id=user.id, expires_delta = token_expires)
-    # return {"access_token": token}
     return {
             "access_token": token,
             "token_type":"bearer",
