@@ -8,7 +8,7 @@ from PIL import Image
 from fastapi import File, UploadFile
 from database import SessionLocal, engine, get_db
 import models
-from fastapi import Depends, APIRouter
+from fastapi import Depends, APIRouter, Form
 from sqlalchemy.orm import Session
 from .auth import get_current_user
 from typing import Optional
@@ -28,21 +28,29 @@ def get_prediction_results(file):
     return output
 
 @router.post('/prediction')
-async def make_prediction(presumed_specy: Optional[models.Species] = None,
+async def make_prediction(presumed_specy: models.Species= Form(default = None, 
+    description="Select a specy from the list if you know it."),
     user: dict = Depends(get_current_user), db: Session = Depends(get_db), 
-    file:UploadFile = File(...)):
+    file:UploadFile = File(description="Select a mushroom image and get a prediction of it is specy.")):
+
     userid = user.get('id')
     if presumed_specy:
         presumedspecy = presumed_specy.value
     else:
         presumedspecy = presumed_specy
+    
     results = get_prediction_results(file=file)
+    results.update({"presumed_specy": presumed_specy})
+
     probability = results.get('confidence')
+
     specy = results.get('predicted_specy')
+
     imagename = file.filename
+
     new_prediction = models.Predictions(imagename=imagename,userid=userid, 
     predictedspecy = specy, presumedspecy=presumedspecy, confidence= probability)
+
     db.add(new_prediction)
     db.commit()
-    results.update({"presumed_specy": presumed_specy})
     return results
