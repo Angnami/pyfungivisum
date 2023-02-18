@@ -1,0 +1,3 @@
+./database/create_db.sql
+./database/Dockerfile
+./__pycache__/*

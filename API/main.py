@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from database import engine
-from routers import predictions, auth
+from database.database import engine
+from routers import predictions, auth, admin
 import models
 import uvicorn
 
@@ -25,7 +25,8 @@ async def welcome():
 
 app.include_router(auth.router)
 app.include_router(predictions.router)
+app.include_router(admin.router)
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", reload=True, port=9000)
+    uvicorn.run("main:app", port=9000,reload=True)

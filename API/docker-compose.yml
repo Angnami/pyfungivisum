@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+  mysql:
+    container_name: mysql
+    build:
+      context: ./database/
+      dockerfile: Dockerfile
+    env_file:
+      - ./envs/.env
+    ports:
+      - "306:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    networks:
+      - mysqlnet
+    restart: always
+
+  pyfungivisum-app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: pyfungivisum-app
+    command: sh -c "sleep 10s; uvicorn main:app --host 0.0.0.0 --port 9000"
+    depends_on:
+      - mysql
+    networks:
+      - mysqlnet
+    ports:
+      - "9000:9000"
+    restart: always
+    env_file:
+      - ./envs/.env
+    tty: true
+    stdin_open: true
+  adminer:
+    image: adminer
+    container_name: adminer
+    depends_on:
+    - mysql
+    ports:
+    - "8080:8080"
+    networks:
+    - mysqlnet
+    restart: always
+
+volumes:
+  mysqldata:
+networks:
+  mysqlnet:
+    
+
