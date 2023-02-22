@@ -1,3 +1,6 @@
 database/create_db.sql
 database/Dockerfile
 __pycache__/*
+Dockerfile
+docker-compose.yml
+build_images.sh
