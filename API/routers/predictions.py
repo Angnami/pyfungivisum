@@ -18,7 +18,7 @@ from sqlalchemy import text
 models.Base.metadata.create_all(bind=engine)
 conn = engine.connect()
 
-model = EfficientNetModel('ML/efficientnet_full_model.h5')
+model = EfficientNetModel('ML/efficientnet_model.h5')
 
 router = APIRouter(
     tags=['predictions']
