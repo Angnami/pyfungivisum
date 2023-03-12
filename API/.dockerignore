@@ -1,6 +1,8 @@
 database/create_db.sql
 database/Dockerfile
-__pycache__/*
+__pycache__
 Dockerfile
 docker-compose.yml
-build_images.sh
+kubernetes
+envs
+test-data
