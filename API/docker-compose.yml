@@ -2,10 +2,7 @@ version: "3.9"
 services:
   mysql:
     container_name: mysql
-    build:
-      context: ./database/
-      dockerfile: Dockerfile
-    # image: angnami/pyfungivisum-db:1.0.0
+    image: angnami/pyfungivisum-db:latest
     env_file:
       - ./envs/.env
     ports:
@@ -21,10 +18,7 @@ services:
     restart: always
 
   pyfungivisum-app:
-    build:
-      context: ./
-      dockerfile: Dockerfile
-    # image: angnami/pyfungivisum-app:1.0.0
+    image: angnami/pyfungivisum-app:latest
     container_name: pyfungivisum-app
     command: sh -c "sleep 10s; uvicorn main:app --host 0.0.0.0 --port 9000"
     depends_on:
@@ -36,8 +30,6 @@ services:
     restart: always
     env_file:
       - ./envs/.env
-    tty: true
-    stdin_open: true
   adminer:
     image: adminer
     container_name: adminer
