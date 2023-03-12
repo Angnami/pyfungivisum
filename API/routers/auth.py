@@ -96,7 +96,7 @@ db: Session = Depends(get_db)):
     results = conn.execute(sql)
     old_hashed_pw = [row[0] for row in results][0]
     is_same = verify_password(new_user.password, old_hashed_pw)
-    if not is_same:
+    if is_same == False:
         db.query(models.Users).\
             filter(models.Users.id == id).\
             update({models.Users.email:new_user.email,
@@ -107,7 +107,8 @@ db: Session = Depends(get_db)):
             )
         db.commit()
         return {"message": "Your password is successfully updated."}
-    return {"message": " Sorry your two passwords are identique. They must be different!"}
+    else:
+        return {"message": " Sorry your two passwords are identique. They must be different!"}
 
 @router.post("/token")
 async def login_for_access_token(form_data:OAuth2PasswordRequestForm = Depends(),
