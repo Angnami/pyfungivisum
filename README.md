@@ -2,7 +2,7 @@
 
 ## Objectif
 
-Ce projet est réalisé dans le cadre de la formation MLOps que j'ai suivie chez Datascientest du 04/10/2022 au 14/03/2023. Il a pour objectif de déployer le modèle de Deep Learning que j'ai développé avec Clement Tellier, Daniela Lazar et Laure Duboeuf pour l'identification de l'espèce d'un champignon à partir de son image.
+Ce projet est réalisé dans le cadre de la formation [MLOps](https://datascientest.com/formation-ml-ops) que j'ai suivie chez [Datascientest](https://datascientest.com/) du 04/10/2022 au 14/03/2023. Il a pour objectif de déployer le modèle de Deep Learning que j'ai développé avec [Clement Tellier](https://www.linkedin.com/in/clement-tellier-365a9743/), [Daniela Lazar](https://www.linkedin.com/in/daniela-lazar-596720107/) et [Laure Duboeuf](https://www.linkedin.com/in/laure-duboeuf-16b712114/) pour la validation du parcours [Data Scientist](https://datascientest.com/formation-data-scientist). Ce modèle avait été conçu pour l'identification de l'espèce d'un champignon à partir de son image.
 
 ## Modélisation
 ### Espèces retenues:
@@ -24,7 +24,9 @@ Ce projet est réalisé dans le cadre de la formation MLOps que j'ai suivie chez
 
 ### Données
 
-* Entrainement: 11 104 images
+* Entrainement & Validation: 11 104 images
+    * Training set : 8 883 images
+    * Validation set : 2 221 images
 * Test: 2 777 images
 
 
@@ -172,3 +174,41 @@ networks:
   mysqlnet:
 
 ```
+
+## Deploiement sur AWS avec kubernetes
+
+### Conversion du fichier docker-compose.yml pour créer automatiquement les manifestes des objets kubernetes nécessaires après avoir installé l'outil kompose 
+
+```kompose
+kompose convert
+
+```
+
+### Connexion au compte aws après avoir installé aws cli
+
+```aws
+aws configure
+
+```
+
+###  Création du cluster après avoir installé eksctl
+
+```eksctl
+eksctl create cluster --name pyfungivisum-cluster --nodegroup-name\ pyfungivisum-cluster-node-group  --node-type m5.large --nodes 3 --nodes-min 3 --nodes-max 5 \--managed --asg-access --zones=us-east-1a,us-east-1b
+
+```
+
+### Création des différents objets kubernetes
+
+```kubernetes
+
+kubectl apply -f api-deployment.yaml
+kubectl apply -f api-service.yaml
+kubectl apply -f mysql-deployment.yaml
+kubectl apply -f mysql-service.yaml
+kubectl apply -f mysqldata-persistentvolume.yaml
+kubectl apply -f configmap.yaml
+kubectl apply -f secret.yaml
+
+```
+
