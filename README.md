@@ -43,18 +43,18 @@ Ce projet est réalisé dans le cadre de la formation MLOps que j'ai suivie chez
 L'API comporte 4 routers:
 * home : pour vérifier que l'application fonctionne normalement
 * user avec 4 routes:
- * /subscription : pour s'identifier afin de pouvoir utiliser l'application
- * /update : pour modifier les informations d'un utilisateur
- * /token : pour générer un token de connexion
- * /unsubscribe : pour se désinscrire 
-* admin avec 3 routes:
- * /database: reset_table
- * /users/remove : pour supprimer un utilisateur
- * /users/show: pour afficher tous les utilisateurs
+    * /subscription : pour s'identifier afin de pouvoir utiliser l'application
+    * /update : pour modifier les informations d'un utilisateur
+    * /token : pour générer un token de connexion
+    * /unsubscribe : pour se désinscrire 
+* admin avec 3 routes (doits d'administrateur nécessaires!):
+    * /database: pour réinitialiser une table de la base
+    * /users/remove : pour supprimer un utilisateur
+    * /users/show: pour afficher tous les utilisateurs
 * predictions avec 3 routes:
- * /new_prediction : pour charger l'image d'un champignon et connaitre son espèce
- * /existing_predictions : pour affciher les prédictions déjà effectuées
- * /deletion: pour supprimer les prédictions existentes
+    * /new_prediction : pour charger l'image d'un champignon et connaitre son espèce
+    * /existing_predictions : pour affciher les prédictions déjà effectuées
+    * /deletion: pour supprimer les prédictions existentes
 
 ## Création d'une base de données MySQL pour stocker les informations des utilisateurs et les prédictions du modèle
 
@@ -90,4 +90,85 @@ CREATE TABLE `predictions`(
 
 ```
 
+## Conteneurisation de l'API et de la base de données
 
+### API
+
+```docker
+FROM debian:latest
+
+WORKDIR /app
+
+COPY . .
+
+RUN apt update && apt install python3-pip  -y  
+RUN apt update && apt install python3-opencv -y libopencv-dev
+RUN pip install --upgrade pip
+RUN pip install tensorflow
+RUN pip install -r requirements.txt
+
+EXPOSE 9000
+
+CMD uvicorn main:app --host 0.0.0.0 --port 9000
+
+```
+### Base de données
+
+```docker
+FROM mysql:latest
+
+COPY ./create_db.sql /docker-entrypoint-initdb.d/
+```
+
+### Docker-compose (API & BD)
+
+```docker
+version: "3.9"
+services:
+  mysql:
+    container_name: mysql
+    image: angnami/pyfungivisum-db:latest
+    env_file:
+      - ./envs/.env
+    ports:
+      - "306:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    healthcheck:
+        test: ["CMD", "mysqladmin" ,"ping", "-h", "mysql"]
+        timeout: 10s
+        retries: 10
+    networks:
+      - mysqlnet
+    restart: always
+
+  pyfungivisum-app:
+    image: angnami/pyfungivisum-app:latest
+    container_name: pyfungivisum-app
+    command: sh -c "sleep 10s; uvicorn main:app --host 0.0.0.0 --port 9000"
+    depends_on:
+      - mysql
+    networks:
+      - mysqlnet
+    ports:
+      - "9000:9000"
+    restart: always
+    env_file:
+      - ./envs/.env
+  adminer:
+    image: adminer
+    container_name: adminer
+    depends_on:
+    - mysql
+    ports:
+    - "8080:8080"
+    networks:
+    - mysqlnet
+    restart: always
+
+volumes:
+  mysqldata:
+networks:
+  mysqlnet:
+
+```
