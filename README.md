@@ -179,22 +179,22 @@ networks:
 
 ### Conversion du fichier docker-compose.yml pour créer automatiquement les manifestes des objets kubernetes nécessaires après avoir installé l'outil kompose 
 
-```kompose
+```
 kompose convert
 
 ```
 
 ### Connexion au compte aws après avoir installé aws cli
 
-```aws
+```
 aws configure
 
 ```
 
 ###  Création du cluster après avoir installé eksctl
 
-```eksctl
-eksctl create cluster --name pyfungivisum-cluster --nodegroup-name\ pyfungivisum-cluster-node-group  --node-type m5.large --nodes 3 --nodes-min 3 --nodes-max 5 \--managed --asg-access --zones=us-east-1a,us-east-1b
+```
+eksctl create cluster --name pyfungivisum-cluster --nodegroup-name pyfungivisum-cluster-node-group  --node-type m5.large --nodes 3 --nodes-min 3 --nodes-max 5 --managed --asg-access --zones=us-east-1a,us-east-1b
 
 ```
 
