@@ -80,7 +80,7 @@ async def subscribe(new_user:models.CreateUser, db: Session = Depends(get_db)):
         db.commit()
         return {"message": "You are successfully signed in."}
 
-    raise HTTPException(status_code=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
         detail="This username is not available. Choose another one please!")
 
 @router.put('/update')
@@ -108,7 +108,8 @@ db: Session = Depends(get_db)):
         db.commit()
         return {"message": "Your password is successfully updated."}
     else:
-        return {"message": " Sorry your two passwords are identique. They must be different!"}
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+        detail="Sorry your two passwords are identique. They must be different!")
 
 @router.post("/token")
 async def login_for_access_token(form_data:OAuth2PasswordRequestForm = Depends(),
@@ -133,7 +134,9 @@ async def delete_account(user:dict = Depends(get_current_user),db: Session = Dep
         db.query(models.Users).filter(models.Users.id == id).delete()
         db.commit()
         return {"message":"Your account is sucessfully deleted. You can subscribe again."}
-    return {"message": "Sorry you can not delete an administrator user."}
+    else:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+        detail="Sorry you can not delete an administrator user!")
 
 
 # Exceptions

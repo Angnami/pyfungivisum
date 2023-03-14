@@ -1,7 +1,7 @@
 import sys
 sys.path.append("..")
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends,HTTPException, status
 from database.database import get_db, engine, SessionLocal
 import models
 from sqlalchemy.orm import Session
@@ -41,7 +41,8 @@ async def reset_table(table:str, user: dict = Depends(get_current_user), db: Ses
                 db.commit()
                 return {"message":f"The {table} table is successfully reset."}
             return {"message":f"Sorry the {table} table is empty."}
-    return {"message": "Sorry you don't have administrator rights!"}
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Sorry you don't have administrator rights!")
 
 @router.delete('/users/remove')
 async def delete_user(id:str, user:dict = Depends(get_current_user),
@@ -53,7 +54,8 @@ db: Session = Depends(get_db)):
             db.commit()
             return {"message": f"User with id {id} is sucessfully deleted."}
         return {"message": f"There is no user with id {id}."}
-    return {"message": "Sorry you don't have administrator rights!"}
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Sorry you don't have administrator rights!")
 
 @router.get('/users/show')
 async def show_users(user:dict = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -62,7 +64,8 @@ async def show_users(user:dict = Depends(get_current_user), db: Session = Depend
         if len(to_show) > 0:
             return {"users": to_show}
         return {"message": "There is no regsitred user."}
-    return {"message": "Sorry you don't have administrator rights!"}
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Sorry you don't have administrator rights!")
 
         
 
