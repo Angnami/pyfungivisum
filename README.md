@@ -179,6 +179,7 @@ networks:
 
 ### Conversion du fichier docker-compose.yml pour créer automatiquement les manifestes des objets kubernetes nécessaires après avoir installé l'outil kompose 
 
+Les différents fichiers créés se trouvent dans le sous-dossier aws du dossier kubernetes.
 ```
 kompose convert
 
